@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { ClerkProvider, Show, SignInButton, SignUpButton,  UserButton} from '@clerk/nextjs';
 import { dark } from "@clerk/themes";
+import { ConvexClientProvider } from "@/components/convex-client-provider";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -43,6 +44,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ConvexClientProvider>
          <header>
         
             <SignInButton />
@@ -56,6 +58,7 @@ export default function RootLayout({
        
           </header>
           {children}
+          </ConvexClientProvider>
         </ThemeProvider>
         
         </body>
