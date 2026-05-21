@@ -7,17 +7,31 @@ export const create = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.insert("projects", {
-        name: args.name,
-        ownerId: "123",
-        updatedAt: 0
+      name: args.name,
+      ownerId: identity.subject,
+      updatedAt: 0,
     });
   },
 });
 
 export const get = query({
-    args: {},
+  args: {},
   handler: async (ctx) => {
-   return await ctx.db.query("projects").collect();
-    },
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      return [];
+    }
+
+    return await ctx.db.query("projects")
+      .withIndex("ownerId", (q) => q.eq("ownerId", identity.subject))
+      .collect();
+  },
 });
