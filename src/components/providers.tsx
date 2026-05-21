@@ -6,6 +6,7 @@ import { ClerkProvider,  useAuth ,  UserButton } from "@clerk/nextjs";
 import { ConvexProviderWithClerk} from "convex/react-clerk";
 import { ThemeProvider } from "./theme-provider";
 import { UnauthenticatedView } from "@/features/auth/components/unauthenticated-view";
+import { AuthLoadingView } from "@/features/auth/components/auth-loading-view";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -26,7 +27,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                       <UnauthenticatedView/>
                     </Unauthenticated>
                     <AuthLoading>
-                        Loading...
+                        <AuthLoadingView/>
                     </AuthLoading>
                 </ThemeProvider>
       </ConvexProviderWithClerk>
