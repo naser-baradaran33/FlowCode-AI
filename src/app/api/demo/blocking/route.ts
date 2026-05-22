@@ -1,10 +1,5 @@
 import { generateText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-
-
-const google = createGoogleGenerativeAI({
-  apiKey: "AIzaSyCMx79lTOZqRpAg1Z0ZgfVHA5qIyWYDU5c",
-});
+import {  google } from '@ai-sdk/google';
 
 export async function POST() {
 const response= await generateText({
