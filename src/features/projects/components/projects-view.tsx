@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
 import { ProjectsList } from "./projects-list";
+import { useCreateProject } from "./hooks/use-projects";
 
 
 const poppins = Poppins({
@@ -16,7 +17,10 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
+
+
 export const ProjectsView = () => {
+    const createProject = useCreateProject();
   return (
     <div className="min-h-screen bg-sidebar  flex flex-col items-center justify-center p-6 md:p-16">
         <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-4">
@@ -38,7 +42,9 @@ export const ProjectsView = () => {
             </div>
             <div className="flex flex-col gap-4 w-full">
                 <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" onClick={() => {}} 
+                    <Button variant="outline" onClick={() => {
+                        createProject({ name: "New Project" });
+                    }}
                      className="h-full items-start justify-start p-4
                      bg-background border flex flex-col gap-6 rounded-none">
                         <div className="flex items-center justify-between w-full">
