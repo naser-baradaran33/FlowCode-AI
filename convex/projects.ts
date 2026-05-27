@@ -34,15 +34,26 @@ export const getPartial = query({
   },
 });
 
-export const get = query({
-   args: {},
-  handler: async (ctx) => {
+export const rename = mutation({
+   args: {
+    id: v.id("projects"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
     const identity = await verifyAuth(ctx);
+    
+    const project = await ctx.db.get("projects", args.id);
 
-    return await ctx.db.query("projects")
-      .withIndex("ownerId", (q) => q.eq("ownerId", identity.subject))
-      .order("desc")
-      .collect();
- 
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    if (project.ownerId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+    await ctx.db.patch("projects", args.id, {
+      name: args.name,
+      updatedAt: Date.now(),
+    });
   },
 });
