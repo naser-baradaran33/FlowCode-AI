@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { Id } from "../../../../convex/_generated/dataModel";
-import { useProject, useRenameProject } from "./hooks/use-projects";
+import {  useProject, useRenameProject } from "./hooks/use-projects";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export const Navbar = ({
   projectId: Id<"projects">;
 }) => {
   const project = useProject(projectId);
-  const renameProject = useRenameProject();
+  const renameProject = useRenameProject(projectId);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const [name, setName] = useState("");
