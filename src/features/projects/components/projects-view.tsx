@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
 import { ProjectsList } from "./projects-list";
-import { useCreateProject } from "./hooks/use-projects";
+import { useCreateProject } from "../hooks/use-projects";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
 
 

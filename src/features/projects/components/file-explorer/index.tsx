@@ -5,13 +5,13 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-import { useProject } from "../../components/hooks/use-projects"
+import { useProject } from "../../hooks/use-projects"
 import { Id } from "../../../../../convex/_generated/dataModel"
 import { 
   useCreateFile,
   useCreateFolder,
   useFolderContents
-} from "../hooks/use-files"
+} from "../../hooks/use-files"
 import { CreateInput } from "./create-input"
 import { LoadingRow } from "./loading-row"
 import { Tree } from "./tree"

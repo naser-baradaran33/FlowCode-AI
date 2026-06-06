@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 import { Doc } from "../../../../convex/_generated/dataModel";
 
-import { useProjectsPartial } from "./hooks/use-projects";
+import { useProjectsPartial } from "../hooks/use-projects";
 
 
 
