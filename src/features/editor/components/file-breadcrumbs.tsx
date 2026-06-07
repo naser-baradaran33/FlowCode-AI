@@ -41,8 +41,9 @@ export const FileBreadcrumbs = ({
     <div className="p-2 bg-background pl-4 border-b">
       <Breadcrumb>
         <BreadcrumbList className="sm:gap-0.5 gap-0.5">
-          {filePath.map((item, index) => {
+           {filePath.map((item, index)=> {
             const isLast = index === filePath.length - 1;
+          
 
             return (
               <React.Fragment key={item._id}>

@@ -22,7 +22,7 @@ export const useFile = (fileId: Id<"files"> | null) => {
 };
 
 export const useFilePath = (fileId: Id<"files"> | null) => {
-  return useQuery(api.files.getFile, fileId ? { id: fileId } : "skip");
+  return useQuery(api.files.getFilePath, fileId ? { id: fileId } : "skip");
 };
 
 export const useUpdateFile = () => {
