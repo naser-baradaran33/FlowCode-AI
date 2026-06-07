@@ -28,6 +28,7 @@
     "@inngest/middleware-sentry": "^1.0.0",
     "@mendable/firecrawl-js": "^4.24.2",
     "@react-symbols/icons": "^1.4.1",
+    "@replit/codemirror-indentation-markers": "^6.5.3",
     "@replit/codemirror-minimap": "^0.5.2",
     "@sentry/nextjs": "^10.53.1",
     "ai": "^6.0.190",
