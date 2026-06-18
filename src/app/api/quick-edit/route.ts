@@ -11,7 +11,7 @@ const quickEditSchema = z.object({
     .string()
     .describe(
       "The edited version of the selected code based on the instruction"
-    ),
+    ), 
 });
 
 const URL_REGEX = /https?:\/\/[^\s)>\]]+/g;
