@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as convertions from "../convertions.js";
 import type * as files from "../files.js";
 import type * as projects from "../projects.js";
+import type * as system from "../system.js";
 
 import type {
   ApiFromModules,
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   convertions: typeof convertions;
   files: typeof files;
   projects: typeof projects;
+  system: typeof system;
 }>;
 
 /**
