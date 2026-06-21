@@ -3,10 +3,10 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 const validateInternalKey = (key: string) => {
-  const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
+  const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY;
 
   if (!internalKey) {
-    throw new Error("POLARIS_CONVEX_INTERNAL_KEY is not configured");
+    throw new Error("FLOWCODEAI_CONVEX_INTERNAL_KEY is not configured");
   }
 
   if (key !== internalKey) {
