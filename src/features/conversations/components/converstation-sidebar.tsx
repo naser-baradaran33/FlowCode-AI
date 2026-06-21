@@ -70,7 +70,7 @@ export const ConversationSidebar = ({
 
   // Check if any message is currently processing
   const isProcessing = conversationMessages?.some(
-    (msg) => msg.status === "processing"
+    (msg: { status?: string }) => msg.status === "processing"
   );
 
   const handleCancel = async () => {
