@@ -74,31 +74,23 @@ export const Navbar = ({
           <BreadcrumbList className="gap-0!">
             <BreadcrumbItem>
               <BreadcrumbLink
-                className="flex items-center gap-1.5"
-                asChild
+                href="/"
+                className="flex items-center gap-1.5 w-fit! p-1.5! h-7!"
               >
-                <Button
-                  variant="ghost"
-                  className="w-fit! p-1.5! h-7!"
-                  asChild
+                <Image
+                  src="/logo.svg"
+                  alt="Logo"
+                  width={20}
+                  height={20}
+                />
+                <span
+                  className={cn(
+                    "text-sm font-medium",
+                    font.className,
+                  )}
                 >
-                  <Link href="/">
-                    <Image
-                      src="/logo.svg"
-                      alt="Logo"
-                      width={20}
-                      height={20}
-                    />
-                    <span
-                      className={cn(
-                        "text-sm font-medium",
-                        font.className,
-                      )}
-                    >
-                      Flowcode-AI
-                    </span>
-                  </Link>
-                </Button>
+                  Flowcode-AI
+                </span>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="ml-0! mr-1" />
@@ -127,14 +119,14 @@ export const Navbar = ({
         </Breadcrumb>
         {project?.importStatus === "importing" ? (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <LoaderIcon className="size-4 text-muted-foreground animate-spin" />
             </TooltipTrigger>
             <TooltipContent>Importing...</TooltipContent>
           </Tooltip>
         ) : (
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <CloudCheckIcon className="size-4 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
