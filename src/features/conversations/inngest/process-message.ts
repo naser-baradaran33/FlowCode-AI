@@ -152,7 +152,7 @@ export const processMessage = inngest.createFunction(
 
     // Create the coding agent with file tools
     const codingAgent = createAgent({
-      name: "polaris",
+      name: "flowcode-ai",
       description: "An expert AI coding assistant",
       system: systemPrompt,
        model: anthropic({
@@ -173,7 +173,7 @@ export const processMessage = inngest.createFunction(
 
     // Create network with single agent
     const network = createNetwork({
-      name: "polaris-network",
+      name: "flowcodeai-network",
       agents: [codingAgent],
       maxIter: 20,
       router: ({ network }) => {
