@@ -29,6 +29,11 @@ interface MessageEvent {
 export const processMessage = inngest.createFunction(
   {
     id: "process-message",
+    triggers: [
+      {
+        event: "message/sent",
+      },
+    ],
     cancelOn: [
       {
         event: "message/cancel",
@@ -39,7 +44,6 @@ export const processMessage = inngest.createFunction(
       const { messageId } = event.data.event.data as MessageEvent;
       const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY;
 
-      // Update the message with error content
       if (internalKey) {
         await step.run("update-message-on-failure", async () => {
           await convex.mutation(api.system.updateMessageContent, {
@@ -50,12 +54,9 @@ export const processMessage = inngest.createFunction(
           });
         });
       }
-    }
+    },
   },
-  {
-    event: "message/sent",
-  },
-  async ({ event, step }) => {
+  async ({ event, step }: { event: { data: MessageEvent }; step: any }) => {
     const { 
       messageId, 
       conversationId,
@@ -63,10 +64,10 @@ export const processMessage = inngest.createFunction(
       message
     } = event.data as MessageEvent;
 
-    const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY; 
+    const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY; 
 
     if (!internalKey) {
-      throw new NonRetriableError("FLOWCODEAI_CONVEX_INTERNAL_KEY is not configured");
+      throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY is not configured");
     }
 
     // TODO: Check if this is needed
@@ -98,12 +99,12 @@ export const processMessage = inngest.createFunction(
 
     // Filter out the current processing message and empty messages
     const contextMessages = recentMessages.filter(
-      (msg) => msg._id !== messageId && msg.content.trim() !== ""
+      (msg: any) => msg._id !== messageId && msg.content.trim() !== ""
     );
 
     if (contextMessages.length > 0) {
       const historyText = contextMessages
-        .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .map((msg: any) => `${msg.role.toUpperCase()}: ${msg.content}`)
         .join("\n\n");
 
       systemPrompt += `\n\n## Previous Conversation (for context only - do NOT repeat these responses):\n${historyText}\n\n## Current Request:\nRespond ONLY to the user's new message below. Do not repeat or reference your previous responses.`;
@@ -152,7 +153,7 @@ export const processMessage = inngest.createFunction(
 
     // Create the coding agent with file tools
     const codingAgent = createAgent({
-      name: "flowcode-ai",
+      name: "polaris",
       description: "An expert AI coding assistant",
       system: systemPrompt,
        model: anthropic({
@@ -173,7 +174,7 @@ export const processMessage = inngest.createFunction(
 
     // Create network with single agent
     const network = createNetwork({
-      name: "flowcodeai-network",
+      name: "polaris-network",
       agents: [codingAgent],
       maxIter: 20,
       router: ({ network }) => {
