@@ -75,7 +75,7 @@ export const PreviewSettingsPopover = ({
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger>
         <Button
           size="sm"
           variant="ghost"
