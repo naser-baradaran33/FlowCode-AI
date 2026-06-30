@@ -421,7 +421,7 @@ export const PromptInputActionAddAttachments = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    (e: Event) => {
+    (e: React.SyntheticEvent) => {
       e.preventDefault();
       attachments.openFileDialog();
     },
@@ -449,8 +449,8 @@ export const PromptInputActionAddScreenshot = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    async (event: Event) => {
-      onSelect?.(event);
+    async (event: any) => {
+      onSelect?.(event as any);
       if (event.defaultPrevented) {
         return;
       }
@@ -474,7 +474,12 @@ export const PromptInputActionAddScreenshot = ({
   );
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect}>
+    <DropdownMenuItem
+      {...props}
+      onSelect={(e) => {
+        void handleSelect(e);
+      }}
+    >
       <Monitor className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>
@@ -1232,7 +1237,9 @@ export const PromptInputSubmit = ({
   }
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (
+      e: Parameters<NonNullable<PromptInputSubmitProps["onClick"]>>[0]
+    ) => {
       if (isGenerating && onStop) {
         e.preventDefault();
         onStop();
@@ -1311,14 +1318,17 @@ export const PromptInputSelectValue = ({
   <SelectValue className={cn(className)} {...props} />
 );
 
-export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard>;
+export type PromptInputHoverCardProps = ComponentProps<typeof HoverCard> & {
+  openDelay?: number;
+  closeDelay?: number;
+};
 
 export const PromptInputHoverCard = ({
   openDelay = 0,
   closeDelay = 0,
   ...props
 }: PromptInputHoverCardProps) => (
-  <HoverCard closeDelay={closeDelay} openDelay={openDelay} {...props} />
+  <HoverCard closeDelay={closeDelay} openDelay={openDelay} {...(props as any)} />
 );
 
 export type PromptInputHoverCardTriggerProps = ComponentProps<

@@ -10,7 +10,7 @@ import { EditorView } from "@/features/editor/components/editor-view";
 import { FileExplorer } from "./file-explorer";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { PreviewView } from "./preview-view";
-//import { ExportPopover } from "./export-popover";
+import { ExportPopover } from "./export-popover";
 
 const MIN_SIDEBAR_WIDTH = 200;
 const MAX_SIDEBAR_WIDTH = 800;
@@ -60,7 +60,7 @@ export const ProjectIdView = ({
           onClick={() => setActiveView("preview")}
         />
         <div className="flex-1 flex justify-end h-full">
-          {/* <ExportPopover projectId={projectId} /> */}
+          <ExportPopover projectId={projectId} />
         </div>
       </nav>
       <div className="flex-1 relative">
