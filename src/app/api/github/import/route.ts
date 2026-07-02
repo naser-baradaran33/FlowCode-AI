@@ -37,8 +37,8 @@ export async function POST(request: Request) {
   const { url } = requestSchema.parse(body);
 
   const { owner, repo } = parseGitHubUrl(url);
-  // https://github.com/AntonioErdeljac/cursor-dev
-  // { owner: "AntonioErdeljac", repo: "cursor-dev" }
+  // https://github.com/naserbaradaran-33/cursor-dev
+  // { owner: "naserbaradaran-33", repo: "cursor-dev" }
 
   const client = await clerkClient();
   const tokens = await client.users.getUserOauthAccessToken(
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
+  const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY;
 
   if (!internalKey) {
     return NextResponse.json(
