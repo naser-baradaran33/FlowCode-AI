@@ -119,7 +119,7 @@ export const processMessage = inngest.createFunction(
         name: "title-generator",
         system: TITLE_GENERATOR_SYSTEM_PROMPT,
         model: anthropic({
-          model: "cclaude-3-5-haiku-latest",
+          model: "claude-3-5-haiku-latest",
           defaultParameters: { temperature: 0, max_tokens: 50 },
         }),
        });
@@ -174,7 +174,7 @@ export const processMessage = inngest.createFunction(
 
     // Create network with single agent
     const network = createNetwork({
-      name: "polaris-network",
+      name: "flowcodeai-network",
       agents: [codingAgent],
       maxIter: 20,
       router: ({ network }) => {
