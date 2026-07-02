@@ -64,10 +64,10 @@ export const processMessage = inngest.createFunction(
       message
     } = event.data as MessageEvent;
 
-    const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY; 
+    const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY; 
 
     if (!internalKey) {
-      throw new NonRetriableError("POLARIS_CONVEX_INTERNAL_KEY is not configured");
+      throw new NonRetriableError("FLOWCODEAI_CONVEX_INTERNAL_KEY is not configured");
     }
 
     // TODO: Check if this is needed
@@ -119,7 +119,7 @@ export const processMessage = inngest.createFunction(
         name: "title-generator",
         system: TITLE_GENERATOR_SYSTEM_PROMPT,
         model: anthropic({
-          model: "claude-3-5-haiku-20241022",
+          model: "cclaude-3-5-haiku-latest",
           defaultParameters: { temperature: 0, max_tokens: 50 },
         }),
        });
@@ -153,11 +153,11 @@ export const processMessage = inngest.createFunction(
 
     // Create the coding agent with file tools
     const codingAgent = createAgent({
-      name: "polaris",
+      name: "flowcodeai",
       description: "An expert AI coding assistant",
       system: systemPrompt,
        model: anthropic({
-        model: "claude-opus-4-20250514",
+        model: "claude-3-5-sonnet-latest",
         defaultParameters: { temperature: 0.3, max_tokens: 16000 }
        }),
        tools: [
