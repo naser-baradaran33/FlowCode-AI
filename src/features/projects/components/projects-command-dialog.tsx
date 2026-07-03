@@ -1,15 +1,6 @@
-"use client";
 import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
-import { AlertCircleIcon,  GlobeIcon, Loader2Icon } from "lucide-react";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { AlertCircleIcon, GlobeIcon, Loader2Icon } from "lucide-react";
 
 import {
   CommandDialog,
@@ -59,7 +50,7 @@ export const ProjectsCommandDialog = ({
     onOpenChange(false);
   };
 
-   return (
+  return (
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}

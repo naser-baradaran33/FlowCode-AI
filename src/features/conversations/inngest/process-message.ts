@@ -119,7 +119,7 @@ export const processMessage = inngest.createFunction(
         name: "title-generator",
         system: TITLE_GENERATOR_SYSTEM_PROMPT,
         model: anthropic({
-          model: "claude-3-5-haiku-latest",
+          model: "claude-haiku-4-5-20251001",
           defaultParameters: { temperature: 0, max_tokens: 50 },
         }),
        });
@@ -157,7 +157,7 @@ export const processMessage = inngest.createFunction(
       description: "An expert AI coding assistant",
       system: systemPrompt,
        model: anthropic({
-        model: "claude-3-5-sonnet-latest",
+        model: "claude-sonnet-4-6",
         defaultParameters: { temperature: 0.3, max_tokens: 16000 }
        }),
        tools: [
@@ -226,4 +226,3 @@ export const processMessage = inngest.createFunction(
     return { success: true, messageId, conversationId };
   }
 );
-

@@ -58,7 +58,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
   const { openUserProfile } = useClerk();
 
   const exportStatus = project?.exportStatus;
-  const exportUrl = project?.exportUrl;
+  const exportRepoUrl = project?.exportRepoUrl;
 
   const form = useForm({
     defaultValues: {
@@ -145,7 +145,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
       );
     }
 
-    if (exportStatus === "completed" && exportUrl) {
+    if (exportStatus === "completed" && exportRepoUrl) {
       return (
         <div className="flex flex-col items-center gap-3">
           <CheckCircle2Icon className="size-6 text-emerald-500" />
@@ -154,13 +154,11 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
             Your project has been exported to GitHub.
           </p>
           <div className="flex flex-col w-full gap-2">
-            <Button
-              size="sm"
-              className="w-full"
-              onClick={() => window.open(exportUrl, "_blank", "noopener,noreferrer")}
-            >
-              <ExternalLinkIcon className="size-4 mr-1" />
-              View on GitHub
+            <Button size="sm" className="w-full" asChild>
+              <Link href={exportRepoUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLinkIcon className="size-4 mr-1" />
+                View on GitHub
+              </Link>
             </Button>
             <Button
               size="sm"
@@ -243,10 +241,10 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
                   </FieldLabel>
                   <Select
                     value={field.state.value}
-                    onValueChange={(value) => {
-                      // Select may emit null, ensure we only pass a valid visibility
-                      if (value === null) return;
-                      field.handleChange(value as "public" | "private");
+                    onValueChange={(value: "public" | "private" | null) => {
+                      if (value !== null) {
+                        field.handleChange(value);
+                      }
                     }}
                   >
                     <SelectTrigger id={field.name}>
@@ -323,14 +321,11 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
-        <button
-          type="button"
-          className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30"
-        >
+      <PopoverTrigger >
+        <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
           {getStatusIcon()}
           <span className="text-sm">Export</span>
-        </button>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="start">
         {renderContent()}

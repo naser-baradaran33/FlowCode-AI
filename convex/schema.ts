@@ -21,8 +21,14 @@ export default defineSchema({
         v.literal("cancelled"),
       ),
     ),
-    exportUrl: v.optional(v.string()),
-    }).index("ownerId", ["ownerId"]),
+    exportRepoUrl: v.optional(v.string()),
+    settings: v.optional(
+    v.object({
+      installCommand: v.optional(v.string()),
+      devCommand: v.optional(v.string()),
+    })
+    ),
+  }).index("by_owner", ["ownerId"]),
 
     files: defineTable({
       projectId: v.id("projects"),

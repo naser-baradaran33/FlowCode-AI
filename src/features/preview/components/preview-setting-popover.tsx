@@ -23,16 +23,16 @@ const formSchema = z.object({
   devCommand: z.string(),
 });
 
-type PreviewSettings = {
+interface ProjectSettings {
   installCommand?: string;
   devCommand?: string;
-};
+}
 
 interface PreviewSettingsPopoverProps {
   projectId: Id<"projects">;
-  initialValues?: PreviewSettings;
+  initialValues?: ProjectSettings;
   onSave?: () => void;
-};
+}
 
 export const PreviewSettingsPopover = ({
   projectId,

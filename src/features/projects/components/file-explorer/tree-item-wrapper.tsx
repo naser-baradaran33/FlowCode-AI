@@ -36,7 +36,7 @@ export const TreeItemWrapper = ({
 }) => {
   return (
     <ContextMenu>
-      <ContextMenuTrigger asChild>
+      <ContextMenuTrigger>
         <button
           onClick={onClick}
           onDoubleClick={onDoubleClick}

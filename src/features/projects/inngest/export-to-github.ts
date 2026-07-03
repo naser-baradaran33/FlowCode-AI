@@ -45,6 +45,7 @@ export const exportToGithub = inngest.createFunction(
       });
     }
   },
+  
   async ({ event, step }: { event: any; step: any }) => {
     const {
       projectId,

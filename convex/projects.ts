@@ -24,14 +24,10 @@ export const updateSettings = mutation({
       throw new Error("Unauthorized to update this project");
     }
 
-    await ctx.db.patch(
-      "projects",
-      args.id,
-      {
-        settings: args.settings,
-        updatedAt: Date.now(),
-      } as any
-    );
+    await ctx.db.patch("projects", args.id, {
+      settings: args.settings,
+      updatedAt: Date.now(),
+    });
   },
 });
 
@@ -61,7 +57,7 @@ export const getPartial = query({
 
     return await ctx.db
       .query("projects")
-      .withIndex("ownerId", (q) => q.eq("ownerId", identity.subject))
+      .withIndex("by_owner", (q) => q.eq("ownerId", identity.subject))
       .order("desc")
       .take(args.limit);
   },
@@ -74,7 +70,7 @@ export const get = query({
 
     return await ctx.db
       .query("projects")
-      .withIndex("ownerId", (q) => q.eq("ownerId", identity.subject))
+      .withIndex("by_owner", (q) => q.eq("ownerId", identity.subject))
       .order("desc")
       .collect();
   },

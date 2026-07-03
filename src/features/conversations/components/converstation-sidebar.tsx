@@ -1,4 +1,4 @@
-import ky from "ky";
+import ky, { HTTPError } from "ky";
 import { toast } from "sonner";
 import { useState } from "react";
 import { 
@@ -78,7 +78,13 @@ export const ConversationSidebar = ({
       await ky.post("/api/messages/cancel", {
         json: { projectId },
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        const body = await error.response.json<{ error?: string }>();
+        toast.error(body.error ?? "Unable to cancel request");
+        return;
+      }
+
       toast.error("Unable to cancel request");
     }
   };
@@ -98,10 +104,16 @@ export const ConversationSidebar = ({
   };
 
   const handleSubmit = async (message: PromptInputMessage) => {
+    const text = message.text.trim();
+
     // If processing and no new message, this is just a stop function
-    if (isProcessing && !message.text) {
+    if (isProcessing && !text) {
       await handleCancel()
       setInput("");
+      return;
+    }
+
+    if (!text) {
       return;
     }
 
@@ -119,10 +131,16 @@ export const ConversationSidebar = ({
       await ky.post("/api/messages", {
         json: {
           conversationId,
-          message: message.text,
+          message: text,
         },
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        const body = await error.response.json<{ error?: string }>();
+        toast.error(body.error ?? "Message failed to send");
+        return;
+      }
+
       toast.error("Message failed to send");
     }
 
@@ -210,7 +228,6 @@ export const ConversationSidebar = ({
                 placeholder="Ask Flowcode-AI anything..."
                 onChange={(e) => setInput(e.target.value)}
                 value={input}
-                disabled={isProcessing}
               />
             </PromptInputBody>
             <PromptInputFooter>

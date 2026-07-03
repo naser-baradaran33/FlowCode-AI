@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Allotment } from "allotment";
-import { FaGithub } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
 import { EditorView } from "@/features/editor/components/editor-view";
@@ -47,7 +46,7 @@ export const ProjectIdView = ({
   const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full min-h-0 flex flex-col">
       <nav className="h-8.75 flex items-center bg-sidebar border-b">
         <Tab
           label="Code"
@@ -63,27 +62,34 @@ export const ProjectIdView = ({
           <ExportPopover projectId={projectId} />
         </div>
       </nav>
-      <div className="flex-1 relative">
+      <div className="flex-1 min-h-0 relative">
         <div className={cn(
-          "absolute inset-0",
+          "absolute inset-0 min-h-0",
           activeView === "editor" ? "visible" : "invisible"
         )}>
-          <Allotment defaultSizes={[DEFAULT_SIDEBAR_WIDTH, DEFAULT_MAIN_SIZE]}>
+          <Allotment
+            className="h-full min-h-0"
+            defaultSizes={[DEFAULT_SIDEBAR_WIDTH, DEFAULT_MAIN_SIZE]}
+          >
             <Allotment.Pane
               snap
               minSize={MIN_SIDEBAR_WIDTH}
               maxSize={MAX_SIDEBAR_WIDTH}
               preferredSize={DEFAULT_SIDEBAR_WIDTH}
             >
-              <FileExplorer projectId={projectId} />
+              <div className="h-full min-h-0">
+                <FileExplorer projectId={projectId} />
+              </div>
             </Allotment.Pane>
             <Allotment.Pane>
-              <EditorView projectId={projectId} />
+              <div className="h-full min-h-0">
+                <EditorView projectId={projectId} />
+              </div>
             </Allotment.Pane>
           </Allotment>
         </div>
         <div className={cn(
-          "absolute inset-0",
+          "absolute inset-0 min-h-0",
           activeView === "preview" ? "visible" : "invisible"
         )}>
           <PreviewView projectId={projectId} />
