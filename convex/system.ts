@@ -552,7 +552,7 @@ export const updateExportStatus = mutation({
 
     await ctx.db.patch("projects", args.projectId, {
       exportStatus: args.status,
-      exportUrl: args.repoUrl,
+      exportRepoUrl: args.repoUrl,
       updatedAt: Date.now(),
     });
   },
