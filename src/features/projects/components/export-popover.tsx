@@ -34,6 +34,7 @@ import { useProject } from "../hooks/use-projects";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 import Link from "next/link";
+import { readHttpError } from "@/lib/http-error";
 
 const formSchema = z.object({
   repoName: z
@@ -84,9 +85,10 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
         toast.success("Export started...");
       } catch (error) {
         if (error instanceof HTTPError) {
-          const body = await error.response.json<{ error: string }>();
-          if (body.error?.includes("Pro plan required")) {
-            toast.error("Upgrade to import repositories", {
+          const { message, status } = await readHttpError(error);
+
+          if (status === 403 || message?.includes("Pro plan required")) {
+            toast.error("Upgrade to export repositories", {
               action: {
                 label: "Upgrade",
                 onClick: () => openUserProfile(),
@@ -96,7 +98,7 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
             return;
           }
 
-          if (body.error?.includes("GitHub not connected")) {
+          if (status === 400 && message?.includes("GitHub not connected")) {
             toast.error("GitHub account not connected", {
               action: {
                 label: "Connect",

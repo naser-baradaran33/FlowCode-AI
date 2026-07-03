@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { readHttpError } from "@/lib/http-error";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 
@@ -61,8 +62,9 @@ export const ImportGithubDialog = ({
         router.push(`/projects/${projectId}`);
       } catch (error) {
         if (error instanceof HTTPError) {
-          const body = await error.response.json<{ error: string }>();
-          if (body.error?.includes("Pro plan required")) {
+          const { message, status } = await readHttpError(error);
+
+          if (status === 403 || message?.includes("Pro plan required")) {
             toast.error("Upgrade to import repositories", {
               action: {
                 label: "Upgrade",
@@ -73,7 +75,7 @@ export const ImportGithubDialog = ({
             return;
           }
 
-          if (body.error?.includes("GitHub not connected")) {
+          if (status === 400 && message?.includes("GitHub not connected")) {
             toast.error("GitHub account not connected", {
               action: {
                 label: "Connect",
