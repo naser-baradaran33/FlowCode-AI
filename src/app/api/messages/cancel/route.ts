@@ -35,6 +35,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const inngestEventKey = process.env.INNGEST_EVENT_KEY;
+  if (!inngestEventKey) {
+    return NextResponse.json(
+      { error: "INNGEST_EVENT_KEY is not configured" },
+      { status: 500 }
+    );
+  }
+
   try {
     // Find all processing messages in this project
     const processingMessages = await convex.query(
@@ -101,7 +109,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Unable to cancel processing messages." },
+      { error: `Unable to cancel processing messages: ${errorMessage}` },
       { status: 500 }
     );
   }

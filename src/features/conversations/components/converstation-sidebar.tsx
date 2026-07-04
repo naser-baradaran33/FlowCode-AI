@@ -30,6 +30,7 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
+import { readHttpError } from "@/lib/http-error";
 
 import {
   useConversation,
@@ -80,8 +81,8 @@ export const ConversationSidebar = ({
       });
     } catch (error) {
       if (error instanceof HTTPError) {
-        const body = await error.response.json<{ error?: string }>();
-        toast.error(body.error ?? "Unable to cancel request");
+        const { message } = await readHttpError(error);
+        toast.error(message ?? "Unable to cancel request");
         return;
       }
 
@@ -136,8 +137,8 @@ export const ConversationSidebar = ({
       });
     } catch (error) {
       if (error instanceof HTTPError) {
-        const body = await error.response.json<{ error?: string }>();
-        toast.error(body.error ?? "Message failed to send");
+        const { message } = await readHttpError(error);
+        toast.error(message ?? "Message failed to send");
         return;
       }
 

@@ -30,6 +30,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const inngestEventKey = process.env.INNGEST_EVENT_KEY;
+  if (!inngestEventKey) {
+    return NextResponse.json(
+      { error: "INNGEST_EVENT_KEY is not configured" },
+      { status: 500 }
+    );
+  }
+
   const body = await request.json();
   const parsedBody = requestSchema.safeParse(body);
   if (!parsedBody.success) {
@@ -147,7 +155,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Unable to process message." },
+      { error: `Unable to process message: ${errorMessage}` },
       { status: 500 }
     );
   }
