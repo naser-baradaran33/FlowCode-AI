@@ -35,6 +35,43 @@ const teardownWebContainer = () => {
   bootPromise = null;
 };
 
+const fileExists = async (container: WebContainer, path: string) => {
+  try {
+    await container.fs.readFile(path, "utf-8");
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes("ENOENT")) {
+      return false;
+    }
+    throw error;
+  }
+};
+
+const ensureViteEntryCompatFiles = async (
+  container: WebContainer,
+  appendOutput: (data: string) => void
+) => {
+  const hasMainJsx = await fileExists(container, "src/main.jsx");
+  const hasMainTsx = await fileExists(container, "src/main.tsx");
+  if (!hasMainJsx && hasMainTsx) {
+    await container.fs.writeFile("src/main.jsx", 'import "./main.tsx";\n');
+    appendOutput(
+      "Created compatibility file: src/main.jsx -> src/main.tsx\n"
+    );
+  }
+
+  const hasAppJsx = await fileExists(container, "src/App.jsx");
+  const hasAppTsx = await fileExists(container, "src/App.tsx");
+  if (!hasAppJsx && hasAppTsx) {
+    await container.fs.writeFile(
+      "src/App.jsx",
+      'export { default } from "./App.tsx";\n'
+    );
+    appendOutput("Created compatibility file: src/App.jsx -> src/App.tsx\n");
+  }
+};
+
 interface UseWebContainerProps {
   projectId: Id<"projects">;
   enabled: boolean;
@@ -86,6 +123,7 @@ export const useWebContainer = ({
 
         const fileTree = buildFileTree(files);
         await container.mount(fileTree);
+        await ensureViteEntryCompatFiles(container, appendOutput);
 
         container.on("server-ready", (_port, url) => {
           setPreviewUrl(url);
@@ -149,7 +187,13 @@ export const useWebContainer = ({
     const filesMap = new Map(files.map((f) => [f._id, f]));
 
     for (const file of files) {
-      if (file.type !== "file" || file.storageId || !file.content) continue;
+      if (
+        file.type !== "file" ||
+        file.storageId ||
+        file.content === undefined
+      ) {
+        continue;
+      }
 
       const filePath = getFilePath(file, filesMap);
       container.fs.writeFile(filePath, file.content);
