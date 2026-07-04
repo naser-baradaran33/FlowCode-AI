@@ -4,15 +4,30 @@ let convexClient: ConvexHttpClient | null = null;
 
 const getConvexDeploymentUrl = () => {
   const deploymentUrl =
-    process.env.NEXT_PUBLIC_CONVEX_URL ?? process.env.CONVEX_URL;
+    process.env.NEXT_PUBLIC_CONVEX_URL?.trim() ??
+    process.env.CONVEX_URL?.trim();
 
-  if (!deploymentUrl) {
-    throw new Error(
-      "Missing Convex deployment URL. Set NEXT_PUBLIC_CONVEX_URL (and CONVEX_URL for server runtime)."
-    );
+  if (
+    deploymentUrl &&
+    deploymentUrl !== "undefined" &&
+    deploymentUrl !== "null"
+  ) {
+    return deploymentUrl;
   }
 
-  return deploymentUrl;
+  const convexDeployment = process.env.CONVEX_DEPLOYMENT?.trim();
+
+  if (
+    convexDeployment &&
+    convexDeployment !== "undefined" &&
+    convexDeployment !== "null"
+  ) {
+    return `https://${convexDeployment}.convex.cloud`;
+  }
+
+  throw new Error(
+    "Missing Convex deployment URL. Set NEXT_PUBLIC_CONVEX_URL or CONVEX_URL, or provide CONVEX_DEPLOYMENT."
+  );
 };
 
 const getConvexClient = () => {

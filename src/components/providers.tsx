@@ -16,10 +16,17 @@ import { AuthLoadingView } from "@/features/auth/components/auth-loading-view";
 import { ThemeProvider } from "./theme-provider";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
-  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+  const convexUrl =
+    process.env.NEXT_PUBLIC_CONVEX_URL?.trim() ??
+    process.env.CONVEX_URL?.trim() ??
+    (process.env.CONVEX_DEPLOYMENT?.trim()
+      ? `https://${process.env.CONVEX_DEPLOYMENT.trim()}.convex.cloud`
+      : undefined);
 
   if (!convexUrl) {
-    throw new Error("Missing NEXT_PUBLIC_CONVEX_URL environment variable.");
+    throw new Error(
+      "Missing Convex URL. Set NEXT_PUBLIC_CONVEX_URL/CONVEX_URL or CONVEX_DEPLOYMENT."
+    );
   }
 
   const convex = useMemo(() => new ConvexReactClient(convexUrl), [convexUrl]);
