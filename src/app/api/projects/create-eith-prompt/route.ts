@@ -11,7 +11,6 @@ import {
 import { DEFAULT_CONVERSATION_TITLE } from "@/features/conversations/constants";
 
 import { inngest } from "@/inngest/client";
-import { convex } from "@/lib/convex-client";
 
 import { api } from "../../../../../convex/_generated/api";
 
@@ -20,6 +19,7 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const { convex } = await import("@/lib/convex-client");
   const { userId } = await auth();
 
   if (!userId) {

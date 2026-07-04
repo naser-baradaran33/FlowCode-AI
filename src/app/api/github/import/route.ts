@@ -2,7 +2,6 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-import { convex } from "@/lib/convex-client";
 import { inngest } from "@/inngest/client";
 
 import { api } from "../../../../../convex/_generated/api";
@@ -21,6 +20,7 @@ function parseGitHubUrl(url: string) {
 }
 
 export async function POST(request: Request) {
+  const { convex } = await import("@/lib/convex-client");
   const { userId, has } = await auth();
 
   if (!userId) {

@@ -2,7 +2,6 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-import { convex } from "@/lib/convex-client";
 import { inngest } from "@/inngest/client";
 
 import { api } from "../../../../../../convex/_generated/api";
@@ -13,6 +12,7 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const { convex } = await import("@/lib/convex-client");
   const { userId } = await auth();
 
   if (!userId) {
