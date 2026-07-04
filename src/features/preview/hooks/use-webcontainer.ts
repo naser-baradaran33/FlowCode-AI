@@ -54,15 +54,40 @@ const ensureViteEntryCompatFiles = async (
 ) => {
   const hasMainJsx = await fileExists(container, "src/main.jsx");
   const hasMainTsx = await fileExists(container, "src/main.tsx");
-  if (!hasMainJsx && hasMainTsx) {
-    await container.fs.writeFile("src/main.jsx", 'import "./main.tsx";\n');
-    appendOutput(
-      "Created compatibility file: src/main.jsx -> src/main.tsx\n"
-    );
-  }
-
   const hasAppJsx = await fileExists(container, "src/App.jsx");
   const hasAppTsx = await fileExists(container, "src/App.tsx");
+
+  if (!hasMainJsx) {
+    if (hasMainTsx) {
+      await container.fs.writeFile("src/main.jsx", 'import "./main.tsx";\n');
+      appendOutput(
+        "Created compatibility file: src/main.jsx -> src/main.tsx\n"
+      );
+    } else {
+      const appImport = hasAppTsx
+        ? 'import App from "./App.tsx";\n'
+        : hasAppJsx
+          ? 'import App from "./App.jsx";\n'
+          : 'const App = () => <div style={{padding:"2rem", fontFamily:"system-ui"}}>Preview app is missing src/App.tsx or src/App.jsx.</div>;\n';
+
+      await container.fs.writeFile(
+        "src/main.jsx",
+        `import React from "react";
+import ReactDOM from "react-dom/client";
+${appImport}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+`
+      );
+      appendOutput("Created compatibility file: src/main.jsx bootstrap\n");
+    }
+  }
+
   if (!hasAppJsx && hasAppTsx) {
     await container.fs.writeFile(
       "src/App.jsx",
