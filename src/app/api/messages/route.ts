@@ -31,88 +31,124 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { conversationId, message } = requestSchema.parse(body);
-
-  // Call convex mutation, query
-  const conversation = await convex.query(api.system.getConversationById, {
-    internalKey,
-    conversationId: conversationId as Id<"conversations">,
-  });
-
-  if (!conversation) {
-    return NextResponse.json(
-      { error: "Conversation not found" },
-      { status: 404 }
-    );
+  const parsedBody = requestSchema.safeParse(body);
+  if (!parsedBody.success) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
+  const { conversationId, message } = parsedBody.data;
 
-  const projectId = conversation.projectId;
-
-  // Find all processing messages in this project
-  const processingMessages = await convex.query(
-    api.system.getProcessingMessages,
-    {
+  try {
+    // Call convex mutation, query
+    const conversation = await convex.query(api.system.getConversationById, {
       internalKey,
-      projectId,
+      conversationId: conversationId as Id<"conversations">,
+    });
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 }
+      );
     }
-  );
 
-  if (processingMessages.length > 0) {
-    // Cancel all processing messages
-    await Promise.all(
-      processingMessages.map(async (msg) => {
-        await inngest.send({
-          name: "message/cancel",
-          data: {
-            messageId: msg._id,
-          },
-        });
+    const projectId = conversation.projectId;
 
-        await convex.mutation(api.system.updateMessageStatus, {
-          internalKey,
-          messageId: msg._id,
-          status: "cancelled",
-        });
-      })
+    // Find all processing messages in this project
+    const processingMessages = await convex.query(
+      api.system.getProcessingMessages,
+      {
+        internalKey,
+        projectId,
+      }
     );
-  }
 
-  // Create user message
-  await convex.mutation(api.system.createMessage, {
-    internalKey,
-    conversationId: conversationId as Id<"conversations">,
-    projectId,
-    role: "user",
-    content: message,
-  });
+    if (processingMessages.length > 0) {
+      // Cancel all processing messages
+      await Promise.all(
+        processingMessages.map(async (msg) => {
+          await inngest.send({
+            name: "message/cancel",
+            data: {
+              messageId: msg._id,
+            },
+          });
 
-  // Create assistant message placeholder with processing status
-  const assistantMessageId = await convex.mutation(
-    api.system.createMessage,
-    {
+          await convex.mutation(api.system.updateMessageStatus, {
+            internalKey,
+            messageId: msg._id,
+            status: "cancelled",
+          });
+        })
+      );
+    }
+
+    // Create user message
+    await convex.mutation(api.system.createMessage, {
       internalKey,
       conversationId: conversationId as Id<"conversations">,
       projectId,
-      role: "assistant",
-      content: "",
-      status: "processing",
-    }
-  );
+      role: "user",
+      content: message,
+    });
 
-  // Trigger Inngest to process the message
-  const event = await inngest.send({
-    name: "message/sent",
-    data: {
+    // Create assistant message placeholder with processing status
+    const assistantMessageId = await convex.mutation(
+      api.system.createMessage,
+      {
+        internalKey,
+        conversationId: conversationId as Id<"conversations">,
+        projectId,
+        role: "assistant",
+        content: "",
+        status: "processing",
+      }
+    );
+
+    // Trigger Inngest to process the message
+    const event = await inngest.send({
+      name: "message/sent",
+      data: {
+        messageId: assistantMessageId,
+        conversationId,
+        projectId,
+        message,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      eventId: event.ids[0],
       messageId: assistantMessageId,
-      conversationId,
-      projectId,
-      message,
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Failed to process message", error);
 
-  return NextResponse.json({
-    success: true,
-    eventId: event.ids[0],
-    messageId: assistantMessageId,
-  });
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown server error";
+
+    if (
+      errorMessage.includes("Invalid internal key") ||
+      errorMessage.includes("FLOWCODEAI_CONVEX_INTERNAL_KEY is not configured")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Server configuration mismatch between Vercel and Convex (FLOWCODEAI_CONVEX_INTERNAL_KEY).",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (errorMessage.includes("Missing Convex deployment URL")) {
+      return NextResponse.json(
+        { error: "Convex URL is missing in server environment variables." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Unable to process message." },
+      { status: 500 }
+    );
+  }
 };

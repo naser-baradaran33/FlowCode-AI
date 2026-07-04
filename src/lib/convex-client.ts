@@ -4,8 +4,8 @@ let convexClient: ConvexHttpClient | null = null;
 
 const getConvexDeploymentUrl = () => {
   const deploymentUrl =
-    process.env.NEXT_PUBLIC_CONVEX_URL?.trim() ??
-    process.env.CONVEX_URL?.trim();
+    process.env.CONVEX_URL?.trim() ??
+    process.env.NEXT_PUBLIC_CONVEX_URL?.trim();
 
   if (
     deploymentUrl &&

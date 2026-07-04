@@ -20,7 +20,11 @@ export async function POST(request: Request) {
   }
   
   const body = await request.json();
-  const { projectId } = requestSchema.parse(body);
+  const parsedBody = requestSchema.safeParse(body);
+  if (!parsedBody.success) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const { projectId } = parsedBody.data;
 
   const internalKey = process.env.FLOWCODEAI_CONVEX_INTERNAL_KEY;
 
@@ -31,42 +35,74 @@ export async function POST(request: Request) {
     );
   }
 
-  // Find all processing messages in this project
-  const processingMessages = await convex.query(
-    api.system.getProcessingMessages,
-    {
-      internalKey,
-      projectId: projectId as Id<"projects">,
-    }
-  );
-
-  if (processingMessages.length === 0) {
-    return NextResponse.json({ success: true, cancelled: false });
-  }
-
-  // Cancel all processing messages
-  const cancelledIds = await Promise.all(
-    processingMessages.map(async (msg) => {
-      await inngest.send({
-        name: "message/cancel",
-        data: {
-          messageId: msg._id,
-        },
-      });
-
-      await convex.mutation(api.system.updateMessageStatus, {
+  try {
+    // Find all processing messages in this project
+    const processingMessages = await convex.query(
+      api.system.getProcessingMessages,
+      {
         internalKey,
-        messageId: msg._id,
-        status: "cancelled",
-      });
+        projectId: projectId as Id<"projects">,
+      }
+    );
 
-      return msg._id;
-    })
-  );
+    if (processingMessages.length === 0) {
+      return NextResponse.json({ success: true, cancelled: false });
+    }
 
-  return NextResponse.json({
-    success: true,
-    cancelled: true,
-    messageIds: cancelledIds,
-  });
+    // Cancel all processing messages
+    const cancelledIds = await Promise.all(
+      processingMessages.map(async (msg) => {
+        await inngest.send({
+          name: "message/cancel",
+          data: {
+            messageId: msg._id,
+          },
+        });
+
+        await convex.mutation(api.system.updateMessageStatus, {
+          internalKey,
+          messageId: msg._id,
+          status: "cancelled",
+        });
+
+        return msg._id;
+      })
+    );
+
+    return NextResponse.json({
+      success: true,
+      cancelled: true,
+      messageIds: cancelledIds,
+    });
+  } catch (error) {
+    console.error("Failed to cancel message processing", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown server error";
+
+    if (
+      errorMessage.includes("Invalid internal key") ||
+      errorMessage.includes("FLOWCODEAI_CONVEX_INTERNAL_KEY is not configured")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Server configuration mismatch between Vercel and Convex (FLOWCODEAI_CONVEX_INTERNAL_KEY).",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (errorMessage.includes("Missing Convex deployment URL")) {
+      return NextResponse.json(
+        { error: "Convex URL is missing in server environment variables." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Unable to cancel processing messages." },
+      { status: 500 }
+    );
+  }
 };
