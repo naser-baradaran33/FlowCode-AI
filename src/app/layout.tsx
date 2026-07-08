@@ -5,7 +5,7 @@ import { Providers } from "@/components/providers";
 
 import "allotment"
 import "./globals.css";
-import Image from "next/image";
+
 
 
 const inter = Inter({
@@ -34,7 +34,6 @@ export default function RootLayout({
     
     <html
       lang="en" suppressHydrationWarning>
-        <Image src="/logo.svg" alt="Flowcode AI" width={80} height={80} />
       <body className={`${inter.variable} ${plexMono.variable} antialiased`}>
 
         
